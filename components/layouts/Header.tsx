@@ -52,7 +52,7 @@ export function Header() {
 
     return (
         <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-            <div className="container flex h-16 items-center justify-between p-2">
+            <div className="flex h-16 items-center justify-between px-4">
                 <Logo />
 
                 {user === undefined && (
@@ -60,7 +60,7 @@ export function Header() {
                 )}
 
                 {user === null && (
-                    <AuthDialog />
+                    <AuthDialog className="btn-fuse" />
                 )}
 
                 {user && (

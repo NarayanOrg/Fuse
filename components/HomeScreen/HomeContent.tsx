@@ -7,6 +7,7 @@ import { Hero } from "@/components/HomeScreen/Hero"
 import { MessageList } from "@/components/HomeScreen/MessageList"
 import { UserGreeting } from "@/components/HomeScreen/UserGreeting"
 import { auth } from "@/firebase/client"
+import { HowItWorks } from "./HowItWorks"
 
 export function HomeContent({ serverSignedIn }: { serverSignedIn: boolean }) {
   const [clientSignedIn, setClientSignedIn] = useState<boolean | null>(null)
@@ -24,6 +25,9 @@ export function HomeContent({ serverSignedIn }: { serverSignedIn: boolean }) {
       <MessageList />
     </div>
   ) : (
-    <Hero />
+    <div className="m-2 space-y-6">
+      <Hero />
+      <HowItWorks />
+    </div>
   )
 }

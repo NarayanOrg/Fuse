@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { authFetch } from "@/lib/auth/auth-fetch"
 import { Header } from "@/components/layouts/Header"
+import Image from "next/image"
 
 const MAX_BODY = 500
 const MIN_SECONDS = 10
@@ -156,8 +157,8 @@ export default function NewMessagePage() {
 
         return (
             <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center gap-6 px-4 py-10 text-center">
-                <div className="btn-fuse mx-auto flex size-14 items-center justify-center rounded-2xl text-primary-foreground">
-                    <Flame className="size-7" aria-hidden />
+                <div className=" mx-auto flex size-14 items-center justify-center rounded-2xl">
+                    <Image src="/logo.png" alt="Logo" width={40} height={40} />
                 </div>
                 <div className="space-y-2">
                     <h1 className="text-3xl font-extrabold tracking-tight">Your link is ready</h1>
