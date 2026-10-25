@@ -1,12 +1,14 @@
-import { Geist, Geist_Mono, Inter, Roboto } from "next/font/google"
+import { Geist_Mono, Inter, Roboto } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
+import { Toaster } from "sonner";
+import QueryProvider from "@/hooks/QueryProvider";
 
-const robotoHeading = Roboto({subsets:['latin'],variable:'--font-heading'});
+const robotoHeading = Roboto({ subsets: ['latin'], variable: '--font-heading' });
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'})
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -24,9 +26,14 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", fontMono.variable, "font-sans", inter.variable, robotoHeading.variable)}
     >
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
-      </body>
+      <QueryProvider>
+        <body>
+          <ThemeProvider>
+            {children}
+            </ThemeProvider>
+          <Toaster position="top-center" closeButton />
+        </body>
+      </QueryProvider>
     </html>
   )
 }

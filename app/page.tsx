@@ -1,19 +1,41 @@
-import { Button } from "@/components/ui/button"
+'use client'
+import { Hero } from "@/components/HomeScreen/Hero"
+import { MessageList } from "@/components/HomeScreen/MessageList"
+import { UserGreeting } from "@/components/HomeScreen/UserGreeting"
+import { Header } from "@/components/layouts/Header"
+import { auth } from "@/firebase/client"
+import { onAuthStateChanged, type User } from "firebase/auth"
+import { useEffect, useState } from "react"
 
-export default function Page() {
+export default function Home() {
+  const [user, setUser] = useState<User | null>(null)
+  useEffect(
+    () =>
+      onAuthStateChanged(auth, (u) => {
+        if (u) {
+          setUser(u)
+        } else {
+          setUser(null)
+        }
+      }),
+    []
+  )
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
-    </div>
+    <main>
+      <Header />
+      {
+        user ? (
+          <div className="space-y-6 m-2">
+            <UserGreeting />
+            <MessageList />
+          </div>
+        )
+          :
+          (
+
+            <Hero />
+          )
+      }
+    </main>
   )
 }
