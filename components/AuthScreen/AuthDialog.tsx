@@ -13,7 +13,7 @@ import {
     signInWithPopup,
     type User,
 } from "firebase/auth"
-import { Eye, EyeOff, Flame, Loader2 } from "lucide-react"
+import { Eye, EyeOff, Flame, Loader2, Send } from "lucide-react"
 import { toast } from "sonner"
 
 import { auth } from "@/firebase/client"
@@ -29,6 +29,7 @@ import {
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+import Image from "next/image"
 
 /* ------------------------------ helpers ------------------------------ */
 
@@ -408,7 +409,7 @@ export default function AuthDialog({ className }: { className?: string }) {
     if (user) {
         return (
             <Button size="lg" className={className} onClick={() => router.push("/new")}>
-                <Flame className="btn-fuse size-5" aria-hidden />
+                <Send className="btn-fuse size-5" aria-hidden />
                 Send a message
             </Button>
         )
@@ -418,15 +419,15 @@ export default function AuthDialog({ className }: { className?: string }) {
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button size="lg" className={className}>
-                    <Flame className="btn-fuse size-5" aria-hidden />
+                    <Send className="btn-fuse size-5" aria-hidden />
                     Send a message
                 </Button>
             </DialogTrigger>
 
             <DialogContent className="gap-0 my-2 max-h-full overflow-auto border bg-card p-6">
                 <DialogHeader className="items-center text-center">
-                    <div className="btn-fuse mb-2 flex size-14 items-center justify-center rounded-2xl text-primary-foreground">
-                        <Flame className="size-7" aria-hidden />
+                    <div className="mb-2 flex size-14 items-center justify-center rounded-2xl">
+                        <Image src="/logo.png" alt="Logo" width={40} height={40} />
                     </div>
                     <DialogTitle className="text-2xl font-extrabold tracking-tight">
                         Welcome to Fuse

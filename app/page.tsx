@@ -1,41 +1,40 @@
-'use client'
-import { Hero } from "@/components/HomeScreen/Hero"
-import { MessageList } from "@/components/HomeScreen/MessageList"
-import { UserGreeting } from "@/components/HomeScreen/UserGreeting"
 import { Header } from "@/components/layouts/Header"
-import { auth } from "@/firebase/client"
-import { onAuthStateChanged, type User } from "firebase/auth"
-import { useEffect, useState } from "react"
+import { HowItWorks } from "@/components/HomeScreen/HowItWorks"
+import { HomeContent } from "@/components/HomeScreen/HomeContent"
+import { absoluteUrl, site } from "@/config/site"
+import { hasValidSessionCookie } from "@/lib/auth/session-cookie"
 
-export default function Home() {
-  const [user, setUser] = useState<User | null>(null)
-  useEffect(
-    () =>
-      onAuthStateChanged(auth, (u) => {
-        if (u) {
-          setUser(u)
-        } else {
-          setUser(null)
-        }
-      }),
-    []
-  )
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: site.name,
+  url: absoluteUrl("/"),
+  description: site.description,
+  applicationCategory: "CommunicationApplication",
+  operatingSystem: "Any",
+  isAccessibleForFree: true,
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+}
+
+export default async function Home() {
+  const signedIn = await hasValidSessionCookie()
+
   return (
-    <main>
-      <Header />
-      {
-        user ? (
-          <div className="space-y-6 m-2">
-            <UserGreeting />
-            <MessageList />
-          </div>
-        )
-          :
-          (
-
-            <Hero />
-          )
-      }
-    </main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+        }}
+      />
+      <main>
+        <Header />
+        <HomeContent serverSignedIn={signedIn} />
+      </main>
+    </>
   )
 }

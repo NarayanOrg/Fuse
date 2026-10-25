@@ -1,9 +1,11 @@
 import { cache } from "react"
 import type { Metadata } from "next"
+import { FieldPath } from "firebase-admin/firestore"
 
 import { Reader } from "@/components/reader/reader"
 import { adminDb } from "@/firebase/admin"
 import { describeDuration } from "@/lib/format-duration"
+import { buildMetadata } from "@/lib/seo/metadata"
 
 // Public page: no sign-in. Always read fresh from Firestore.
 export const dynamic = "force-dynamic"
@@ -15,15 +17,24 @@ const ID_RE = /^[A-Za-z0-9_-]{6,40}$/
 const getInfo = cache(async (id: string) => {
     if (!ID_RE.test(id)) return null
 
-    const snap = await adminDb.collection("messages").doc(id).get()
-    if (!snap.exists) return null
+    const snap = await adminDb
+        .collection("messages")
+        .where(FieldPath.documentId(), "==", id)
+        .select("senderUsername", "anonymous", "durationSec", "status", "bombAt")
+        .limit(1)
+        .get()
+    const document = snap.docs[0]
+    if (!document) return null
 
-    const m = snap.data()!
+    const m = document.data()
     const bombed =
         m.status === "bombed" || (m.status === "opened" && !!m.bombAt && Date.now() >= m.bombAt)
 
     return {
-        sender: (m.senderUsername as string | null) ?? null,
+        sender:
+            m.anonymous === true || typeof m.senderUsername !== "string"
+                ? null
+                : m.senderUsername.slice(0, 20),
         durationSec: m.durationSec as number,
         bombed,
     }
@@ -43,12 +54,14 @@ export async function generateMetadata({
         ? `${info.sender ? `@${info.sender} sent you a message.` : "Someone sent you a message."} It disappears ${describeDuration(info.durationSec)} after you open it.`
         : "This message no longer exists."
 
-    return {
+    return buildMetadata({
         title,
         description,
-        openGraph: { title, description },
-        robots: { index: false, follow: false },
-    }
+        pathname: `/m/${encodeURIComponent(id)}`,
+        imagePath: `/m/${encodeURIComponent(id)}/opengraph-image`,
+        imageAlt: "A private Fuse message link. The message itself is never shown in this preview.",
+        noIndex: true,
+    })
 }
 
 export default async function MessagePage({
