@@ -81,13 +81,81 @@ there is no robots.txt route yet.
   `/m/[id]`: all returned HTTP 200.
 - No source implementation changes were made in Phase 0.
 
-## Questions for the owner
+## Owner inputs recorded
 
-1. What X/Twitter handle, if any, should be used for `twitter:site`?
-2. Is there a Search Console verification token to include?
-3. Should Privacy and Terms pages be added? They are recommended because the
-   app collects email addresses.
-4. Is “Say it. Then watch it disappear.” the preferred tagline?
-5. The favicon and public icon assets are already modified in the worktree.
-   May the SEO work update these files, or should all current icon assets be
-   preserved and used as-is?
+- X/Twitter site: `@narayanbona`.
+- Search Console verification token: none supplied; no token meta tag was
+  added.
+- Privacy and Terms pages: deferred.
+- Preferred tagline: “Say it. Then watch it disappear.”
+- Existing modified icon assets: preserve them. SEO commits did not stage the
+  separate local icon and logo edits.
+
+## Implementation and final verification
+
+### Delivered
+
+- Added centralized site identity, canonical/metadata helpers, environment
+  aware indexing directives, generated app icons and manifest, robots.txt,
+  and a production-only sitemap.
+- Added default and per-message Open Graph/Twitter PNG routes. Images are
+  1200×630, use local Outfit fonts, and do not include message bodies. Message
+  lookups project only sender/privacy, duration, status, and expiry metadata.
+- Added complete metadata for the homepage, `/new`, `/onboarding`, and
+  `/m/[id]`. Message pages remain `noindex, nofollow` and now return the same
+  directive in `X-Robots-Tag`.
+- Added homepage WebApplication JSON-LD and a server-rendered “How Fuse works”
+  section. Corrected “Opens once” to “Reopens until timer ends.”
+- Added a Firebase-verified, HttpOnly session cookie for server-side
+  homepage selection. Cookie creation and clearing use the existing
+  authenticated, Arcjet-protected API pattern. The client-authenticated
+  homepage remains available as a fallback if a valid session cookie is not
+  present.
+- Removed the temporary synthetic OG preview route after image layout checks.
+
+### Verification performed
+
+- `pnpm build` with `VERCEL_ENV=production`: passed on Next.js 16.4.2.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed with one warning in the separately modified,
+  uncommitted `components/theme-provider.tsx` (`ThemeHotkey` is unused).
+- Production raw HTML: `/` returned 200 with `index, follow`, canonical,
+  description, Open Graph/Twitter metadata, valid WebApplication JSON-LD, and
+  the server-rendered explainer. `/new` and `/onboarding` returned 200 with
+  canonical metadata and `noindex, nofollow`. An unknown `/m/abc123` returned
+  200 with “Message gone”, noindex metadata, and `X-Robots-Tag: noindex,
+  nofollow`.
+- Production robots.txt returned 200 and disallows `/api/`, `/new`, and
+  `/onboarding`; the production sitemap returned 200 and contains only `/`.
+  A non-production build correctly emitted noindex metadata and an empty
+  sitemap.
+- Default and message-specific Open Graph/Twitter endpoints returned PNGs at
+  1200×630, each under 100 KB, with the configured shared cache headers.
+  Message preview image responses also carry `X-Robots-Tag`.
+- The removed `/og-preview/Al` fixture route returns 404. Unauthenticated
+  `POST` and `DELETE` requests to `/api/session` return 401.
+- Authenticated session creation/clearing was not exercised with a live
+  Firebase user token. Verify sign-in and logout on the deployed site.
+
+### Deployment and search follow-up
+
+1. Set `NEXT_PUBLIC_SITE_URL` to the public production origin and deploy with
+   `VERCEL_ENV=production`.
+2. In Google Search Console, verify the domain (no verification token was
+   provided), inspect the homepage, then submit
+   `https://<production-host>/sitemap.xml`. Repeat site verification and
+   sitemap submission in Bing Webmaster Tools if desired.
+3. After deployment, test the homepage and a representative message link with
+   the Meta Sharing Debugger and the social platform preview tools in use.
+   Confirm message preview cards show only sender/status/timer information.
+4. Sign in and verify the homepage shows the account view; confirm the
+   `__session` cookie is HttpOnly and Secure in production, then log out and
+   verify it is cleared.
+
+### Phase commits
+
+- Phase 0: `3c0afd3` — `docs: add Phase 0 SEO audit`
+- Phase 1: `158ac1f` — `feat(seo): add canonical site metadata foundation`
+- Phase 2: `5d579c1` — `feat(seo): add app icons and crawl metadata routes`
+- Phase 3: `6774bcc` — `feat(seo): add social preview images`
+- Phase 4: `6f9b7e3` — `feat(seo): complete page metadata and homepage rendering`
