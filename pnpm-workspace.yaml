@@ -2,3 +2,6 @@ allowBuilds:
   '@firebase/util': true
   protobufjs: true
   unrs-resolver: true
+
+overrides:
+  jwks-rsa: 3.2.0
