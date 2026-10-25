@@ -89,7 +89,19 @@ export const GET = withAuth(async (req, { user }) => {
         return NextResponse.json(blocked.body, { status: blocked.status })
     }
 
-    const snap = await adminDb.collection("messages").where("ownerUid", "==", user.uid).get()
+    const snap = await adminDb
+        .collection("messages")
+        .where("ownerUid", "==", user.uid)
+        .select(
+            "label",
+            "status",
+            "durationSec",
+            "createdAt",
+            "openedAt",
+            "bombAt",
+            "bombedAt"
+        )
+        .get()
 
     const messages = snap.docs
         .map((doc) => {
@@ -107,5 +119,8 @@ export const GET = withAuth(async (req, { user }) => {
         })
         .sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0))
 
-    return NextResponse.json({ messages })
+    return NextResponse.json(
+        { messages },
+        { headers: { "Cache-Control": "private, no-store" } }
+    )
 })

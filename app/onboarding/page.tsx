@@ -13,6 +13,7 @@ import { auth } from "@/firebase/client"
 import { authFetch } from "@/lib/auth/auth-fetch"
 import { USERNAME_RE } from "@/lib/username"
 import { ProtectedRoute } from "@/hooks/ProtectedRoute"
+import { Header } from "@/components/layouts/Header"
 
 type Status = "idle" | "checking" | "available" | "taken" | "invalid"
 
@@ -29,8 +30,8 @@ export default function OnboardingPage() {
     const usernameStatus: Status = !username
         ? "idle"
         : !USERNAME_RE.test(username)
-            ? "invalid"
-            : status
+          ? "invalid"
+          : status
 
     useEffect(
         () =>
@@ -60,7 +61,9 @@ export default function OnboardingPage() {
             } catch (err) {
                 if ((err as Error).name !== "AbortError") {
                     setStatus("idle")
-                    setSubmitError("Unable to check that handle right now. Please try again.")
+                    setSubmitError(
+                        "Unable to check that handle right now. Please try again."
+                    )
                 }
             }
         }, 400)
@@ -95,11 +98,15 @@ export default function OnboardingPage() {
 
             if (data.code === "USERNAME_TAKEN") {
                 setStatus("taken")
-                setSubmitError("That handle is taken. Please choose another one.")
+                setSubmitError(
+                    "That handle is taken. Please choose another one."
+                )
                 return
             }
 
-            setSubmitError(data.error ?? "Something went wrong. Please try again.")
+            setSubmitError(
+                data.error ?? "Something went wrong. Please try again."
+            )
             toast.error(data.error ?? "Something went wrong. Please try again.")
         } catch {
             setSubmitError("Something went wrong. Please try again.")
@@ -111,104 +118,148 @@ export default function OnboardingPage() {
 
     if (!ready) {
         return (
-            <main className="flex min-h-dvh items-center justify-center">
-                <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label="Loading" />
-            </main>
+            <>
+                <Header />
+                <main className="flex min-h-[calc(100dvh-4rem)] items-center justify-center px-4">
+                    <Loader2
+                        className="size-6 animate-spin text-muted-foreground"
+                        aria-label="Loading"
+                    />
+                </main>
+            </>
         )
     }
 
     return (
-        <ProtectedRoute>
-            <main className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center px-4 py-10">
-                <form onSubmit={onSubmit} className="space-y-8" noValidate>
-                    <header className="space-y-2 text-center">
-                        <h1 className="text-3xl font-extrabold tracking-tight">Set up your profile</h1>
-                        <p className="text-muted-foreground">
-                            Pick your handle before someone else claims it.
-                        </p>
-                    </header>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="username">Choose handle</Label>
-                        <div className="relative">
-                            <span
-                                aria-hidden
-                                className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-muted-foreground"
-                            >
-                                @
-                            </span>
-                            <Input
-                                id="username"
-                                value={username}
-                                onChange={(e) => {
-                                    const nextUsername = e.target.value
-                                        .toLowerCase()
-                                        .replace(/\s/g, "")
-                                        .replace(/^@/, "")
-                                    setUsername(nextUsername)
-                                    setStatus(USERNAME_RE.test(nextUsername) ? "checking" : "idle")
-                                    setSubmitError(null)
-                                }}
-                                maxLength={20}
-                                autoComplete="off"
-                                autoCapitalize="none"
-                                spellCheck={false}
-                                placeholder="yourname"
-                                required
-                                aria-invalid={usernameStatus === "taken" || usernameStatus === "invalid"}
-                                aria-describedby="username-hint"
-                                className="h-12 rounded-xl pl-8"
-                            />
-                        </div>
-
-                        <div id="username-hint" role="status" aria-live="polite" className="min-h-5 text-sm">
-                            {usernameStatus === "checking" && (
-                                <p className="flex items-center gap-1.5 text-muted-foreground">
-                                    <Loader2 className="size-4 animate-spin" aria-hidden />
-                                    Checking…
-                                </p>
-                            )}
-                            {usernameStatus === "available" && (
-                                <p className="flex items-center gap-1.5 text-primary">
-                                    <Check className="size-4" aria-hidden />@{username} is available
-                                </p>
-                            )}
-                            {usernameStatus === "taken" && (
-                                <p className="flex items-center gap-1.5 text-destructive">
-                                    <X className="size-4" aria-hidden />
-                                    That handle is taken
-                                </p>
-                            )}
-                            {usernameStatus === "invalid" && (
-                                <p className="flex items-center gap-1.5 text-warning">
-                                    <AlertTriangle className="size-4" aria-hidden />
-                                    Handle must be at least 3 characters
-                                </p>
-                            )}
-                        </div>
-
-                        {submitError && (
-                            <p id="form-error" role="alert" className="text-sm text-destructive">
-                                {submitError}
-                            </p>
-                        )}
-
-                        <p className="text-xs text-muted-foreground">
-                            3 to 20 characters: letters, numbers, underscores.
-                        </p>
-                    </div>
-
-                    <Button
-                        type="submit"
-                        disabled={usernameStatus !== "available" || pending}
-                        aria-label="Continue with selected handle"
-                        className="btn-fuse h-14 w-full rounded-full text-base font-semibold text-primary-foreground disabled:opacity-50"
+        <>
+            <Header />
+            <ProtectedRoute>
+                <main className="mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-sm flex-col justify-center px-4 py-8 sm:py-10">
+                    <form
+                        onSubmit={onSubmit}
+                        className="flex flex-col gap-6 sm:gap-8"
+                        noValidate
                     >
-                        {pending && <Loader2 className="size-4 animate-spin" aria-hidden />}
-                        {pending ? "Saving" : "Continue"}
-                    </Button>
-                </form>
-            </main>
-        </ProtectedRoute>
+                        <header className="flex flex-col gap-2 text-center">
+                            <h1 className="text-2xl font-extrabold tracking-tight text-balance sm:text-3xl">
+                                Set up your profile
+                            </h1>
+                            <p className="text-muted-foreground">
+                                Pick your handle before someone else claims it.
+                            </p>
+                        </header>
+
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="username">Choose handle</Label>
+                            <div className="relative">
+                                <span
+                                    aria-hidden
+                                    className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-muted-foreground"
+                                >
+                                    @
+                                </span>
+                                <Input
+                                    id="username"
+                                    value={username}
+                                    onChange={(e) => {
+                                        const nextUsername = e.target.value
+                                            .toLowerCase()
+                                            .replace(/\s/g, "")
+                                            .replace(/^@/, "")
+                                        setUsername(nextUsername)
+                                        setStatus(
+                                            USERNAME_RE.test(nextUsername)
+                                                ? "checking"
+                                                : "idle"
+                                        )
+                                        setSubmitError(null)
+                                    }}
+                                    maxLength={20}
+                                    autoComplete="off"
+                                    autoCapitalize="none"
+                                    spellCheck={false}
+                                    placeholder="yourname"
+                                    required
+                                    aria-invalid={
+                                        usernameStatus === "taken" ||
+                                        usernameStatus === "invalid"
+                                    }
+                                    aria-describedby="username-hint"
+                                    className="h-12 rounded-xl pl-8"
+                                />
+                            </div>
+
+                            <div
+                                id="username-hint"
+                                role="status"
+                                aria-live="polite"
+                                className="min-h-5 text-sm"
+                            >
+                                {usernameStatus === "checking" && (
+                                    <p className="flex items-center gap-1.5 text-muted-foreground">
+                                        <Loader2
+                                            className="size-4 animate-spin"
+                                            aria-hidden
+                                        />
+                                        Checking…
+                                    </p>
+                                )}
+                                {usernameStatus === "available" && (
+                                    <p className="flex items-center gap-1.5 text-primary">
+                                        <Check className="size-4" aria-hidden />
+                                        @{username} is available
+                                    </p>
+                                )}
+                                {usernameStatus === "taken" && (
+                                    <p className="flex items-center gap-1.5 text-destructive">
+                                        <X className="size-4" aria-hidden />
+                                        That handle is taken
+                                    </p>
+                                )}
+                                {usernameStatus === "invalid" && (
+                                    <p className="flex items-center gap-1.5 text-warning">
+                                        <AlertTriangle
+                                            className="size-4"
+                                            aria-hidden
+                                        />
+                                        Handle must be at least 3 characters
+                                    </p>
+                                )}
+                            </div>
+
+                            {submitError && (
+                                <p
+                                    id="form-error"
+                                    role="alert"
+                                    className="text-sm text-destructive"
+                                >
+                                    {submitError}
+                                </p>
+                            )}
+
+                            <p className="text-xs text-muted-foreground">
+                                3 to 20 characters: letters, numbers,
+                                underscores.
+                            </p>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            disabled={usernameStatus !== "available" || pending}
+                            aria-label="Continue with selected handle"
+                            className="btn-fuse h-14 w-full rounded-full text-base font-semibold text-primary-foreground disabled:opacity-50"
+                        >
+                            {pending && (
+                                <Loader2
+                                    className="size-4 animate-spin"
+                                    aria-hidden
+                                />
+                            )}
+                            {pending ? "Saving" : "Continue"}
+                        </Button>
+                    </form>
+                </main>
+            </ProtectedRoute>
+        </>
     )
 }

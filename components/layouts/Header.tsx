@@ -36,9 +36,13 @@ export function Header() {
 
     async function logout() {
         try {
-            const response = await authFetch("/api/session", { method: "DELETE" })
+            const response = await authFetch("/api/session", {
+                method: "DELETE",
+            })
             if (!response.ok) {
-                throw new Error(`Session clearing failed with status ${response.status}.`)
+                throw new Error(
+                    `Session clearing failed with status ${response.status}.`
+                )
             }
             await signOut(auth)
             queryClient.clear() // don't leak this user's messages to the next sign-in
@@ -52,25 +56,26 @@ export function Header() {
 
     return (
         <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-            <div className="flex h-16 items-center justify-between px-4">
+            <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                 <Logo />
 
                 {user === undefined && (
-                    <div className="h-10 w-36 animate-pulse rounded-full bg-muted" aria-hidden />
+                    <div
+                        className="h-10 w-28 animate-pulse rounded-full bg-muted sm:w-36"
+                        aria-hidden
+                    />
                 )}
 
-                {user === null && (
-                    <AuthDialog className="btn-fuse" />
-                )}
+                {user === null && <AuthDialog className="btn-fuse" />}
 
                 {user && (
                     <div className="flex items-center gap-2">
                         <Button
                             asChild
-                            className="btn-fuse rounded-full px-4 text-primary-foreground"
+                            className="btn-fuse rounded-full px-3 whitespace-nowrap text-primary-foreground sm:px-4"
                         >
                             <Link href="/new">
-                                <Plus className="size-4" aria-hidden />
+                                <Plus data-icon="inline-start" aria-hidden />
                                 Create message
                             </Link>
                         </Button>
@@ -80,10 +85,12 @@ export function Header() {
                                 <button
                                     type="button"
                                     aria-label="Account menu"
-                                    className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    className="rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                 >
                                     <Avatar className="size-10">
-                                        <AvatarFallback className="font-bold">{initial}</AvatarFallback>
+                                        <AvatarFallback className="font-bold">
+                                            {initial}
+                                        </AvatarFallback>
                                     </Avatar>
                                 </button>
                             </DropdownMenuTrigger>
@@ -91,14 +98,21 @@ export function Header() {
                             <DropdownMenuContent align="end" className="w-56">
                                 <DropdownMenuLabel className="font-normal">
                                     <p className="font-semibold">
-                                        {me?.username ? `@${me.username}` : "Signed in"}
+                                        {me?.username
+                                            ? `@${me.username}`
+                                            : "Signed in"}
                                     </p>
-                                    <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                                    <p className="truncate text-xs text-muted-foreground">
+                                        {user.email}
+                                    </p>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
                                     <Link href="/">
-                                        <LayoutList className="size-4" aria-hidden />
+                                        <LayoutList
+                                            className="size-4"
+                                            aria-hidden
+                                        />
                                         My messages
                                     </Link>
                                 </DropdownMenuItem>

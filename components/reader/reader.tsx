@@ -21,7 +21,7 @@ type Props = {
 
 function Shell({ children }: { children: React.ReactNode }) {
     return (
-        <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center gap-8 px-4 py-10 text-center">
+        <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col items-center justify-center gap-6 px-4 py-8 text-center sm:gap-8 sm:px-6 sm:py-10">
             {children}
         </main>
     )
@@ -50,7 +50,9 @@ export function Reader({ id, sender, durationSec, state }: Props) {
         setError(null)
         setPhase("opening")
         try {
-            const res = await fetch(`/api/messages/${id}/open`, { method: "POST" })
+            const res = await fetch(`/api/messages/${id}/open`, {
+                method: "POST",
+            })
 
             if (res.status === 410) {
                 setPhase("bombed")
@@ -97,11 +99,14 @@ export function Reader({ id, sender, durationSec, state }: Props) {
         const isBombed = phase === "bombed"
         return (
             <Shell>
-                <div className="text-7xl motion-safe:animate-in motion-safe:zoom-in-50 motion-safe:duration-500" aria-hidden>
+                <div
+                    className="text-6xl motion-safe:animate-in motion-safe:duration-500 motion-safe:zoom-in-50 sm:text-7xl"
+                    aria-hidden
+                >
                     {isBombed ? "💥" : "🫥"}
                 </div>
-                <div className="space-y-2">
-                    <h1 className="text-3xl font-extrabold tracking-tight">
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-2xl font-extrabold tracking-tight text-balance sm:text-3xl">
                         {isBombed ? "Message destroyed" : "Nothing here"}
                     </h1>
                     <p className="text-muted-foreground">
@@ -110,7 +115,10 @@ export function Reader({ id, sender, durationSec, state }: Props) {
                             : "This link doesn't exist, or the message is already gone."}
                     </p>
                 </div>
-                <Button asChild className="btn-fuse h-12 rounded-full px-8 text-primary-foreground">
+                <Button
+                    asChild
+                    className="btn-fuse h-12 rounded-full px-8 text-primary-foreground"
+                >
                     <Link href="/">Send your own message</Link>
                 </Button>
             </Shell>
@@ -121,10 +129,15 @@ export function Reader({ id, sender, durationSec, state }: Props) {
     if (phase === "revealed") {
         return (
             <Shell>
-                <CountdownDial remainingMs={remainingMs} totalMs={durationSec * 1000} />
+                <CountdownDial
+                    remainingMs={remainingMs}
+                    totalMs={durationSec * 1000}
+                />
 
-                <div className="w-full rounded-2xl border bg-card p-6 text-left">
-                    <p className="whitespace-pre-wrap wrap-break-word text-lg">{body}</p>
+                <div className="w-full rounded-2xl border bg-card p-4 text-left sm:p-6">
+                    <p className="text-base wrap-break-word whitespace-pre-wrap sm:text-lg">
+                        {body}
+                    </p>
                 </div>
 
                 <p className="text-sm text-muted-foreground">
@@ -137,26 +150,31 @@ export function Reader({ id, sender, durationSec, state }: Props) {
     /* --------------------------- before reveal --------------------------- */
     return (
         <Shell>
-            <div className="btn-fuse flex size-20 items-center justify-center rounded-3xl text-primary-foreground">
-                <Flame className="size-10" aria-hidden />
+            <div className="btn-fuse flex size-16 items-center justify-center rounded-3xl text-primary-foreground sm:size-20">
+                <Flame className="size-8 sm:size-10" aria-hidden />
             </div>
 
-            <div className="space-y-3">
-                <h1 className="text-balance text-3xl font-extrabold tracking-tight">
-                    {sender ? `@${sender} sent you a message` : "Someone sent you a message"}
+            <div className="flex flex-col gap-3">
+                <h1 className="text-2xl font-extrabold tracking-tight text-balance sm:text-3xl">
+                    {sender
+                        ? `@${sender} sent you a message`
+                        : "Someone sent you a message"}
                 </h1>
                 <p className="mx-auto inline-block rounded-full border bg-card px-4 py-1.5 text-sm">
-                    Self-destructs {describeDuration(durationSec)} after you open it
+                    Self-destructs {describeDuration(durationSec)} after you
+                    open it
                 </p>
             </div>
 
-            <div className="w-full max-w-sm space-y-3">
+            <div className="flex w-full max-w-sm flex-col gap-3">
                 <Button
                     onClick={reveal}
                     disabled={phase === "opening"}
                     className="btn-fuse h-14 w-full rounded-full text-base font-semibold text-primary-foreground"
                 >
-                    {phase === "opening" && <Loader2 className="size-4 animate-spin" aria-hidden />}
+                    {phase === "opening" && (
+                        <Loader2 className="size-4 animate-spin" aria-hidden />
+                    )}
                     {phase === "opening" ? "Opening" : "Reveal message"}
                 </Button>
                 <p className="text-sm text-muted-foreground">

@@ -66,9 +66,21 @@ const clock = (s: number) =>
 /* ------------------------------ pieces ------------------------------ */
 
 const STATUS_UI = {
-    pending: { label: "Pending", icon: Hourglass, className: "bg-pending/15 text-pending" },
-    opened: { label: "Opened", icon: Flame, className: "bg-warning/15 text-warning" },
-    bombed: { label: "Bombed", icon: Bomb, className: "bg-bombed-surface text-bombed" },
+    pending: {
+        label: "Pending",
+        icon: Hourglass,
+        className: "bg-pending/15 text-pending",
+    },
+    opened: {
+        label: "Opened",
+        icon: Flame,
+        className: "bg-warning/15 text-warning",
+    },
+    bombed: {
+        label: "Bombed",
+        icon: Bomb,
+        className: "bg-bombed-surface text-bombed",
+    },
 } as const
 
 function StatusBadge({ status }: { status: Status }) {
@@ -86,7 +98,13 @@ function StatusBadge({ status }: { status: Status }) {
     )
 }
 
-function CountdownRing({ remainingMs, totalMs }: { remainingMs: number; totalMs: number }) {
+function CountdownRing({
+    remainingMs,
+    totalMs,
+}: {
+    remainingMs: number
+    totalMs: number
+}) {
     const radius = 22
     const circumference = 2 * Math.PI * radius
     const progress = Math.max(0, Math.min(1, remainingMs / totalMs))
@@ -98,8 +116,19 @@ function CountdownRing({ remainingMs, totalMs }: { remainingMs: number; totalMs:
             role="timer"
             aria-label={`${seconds} seconds left`}
         >
-            <svg viewBox="0 0 56 56" className="size-full -rotate-90" aria-hidden>
-                <circle cx="28" cy="28" r={radius} fill="none" strokeWidth="4" className="stroke-muted" />
+            <svg
+                viewBox="0 0 56 56"
+                className="size-full -rotate-90"
+                aria-hidden
+            >
+                <circle
+                    cx="28"
+                    cy="28"
+                    r={radius}
+                    fill="none"
+                    strokeWidth="4"
+                    className="stroke-muted"
+                />
                 <circle
                     cx="28"
                     cy="28"
@@ -122,11 +151,21 @@ function CountdownRing({ remainingMs, totalMs }: { remainingMs: number; totalMs:
     )
 }
 
-function MessageCard({ m, status, now }: { m: MessageItem; status: Status; now: number }) {
+function MessageCard({
+    m,
+    status,
+    now,
+}: {
+    m: MessageItem
+    status: Status
+    now: number
+}) {
     const title = m.label || "Untitled message"
 
     async function copyLink() {
-        await navigator.clipboard.writeText(`${window.location.origin}/m/${m.id}`)
+        await navigator.clipboard.writeText(
+            `${window.location.origin}/m/${m.id}`
+        )
         toast.success("Link copied")
     }
 
@@ -134,8 +173,8 @@ function MessageCard({ m, status, now }: { m: MessageItem; status: Status; now: 
         status === "pending"
             ? `Not opened yet · created ${ago(m.createdAt, now)}`
             : status === "opened"
-                ? `Recipient opened ${ago(m.openedAt, now)}`
-                : `Bombed ${ago(m.bombedAt ?? m.bombAt, now)}`
+              ? `Recipient opened ${ago(m.openedAt, now)}`
+              : `Bombed ${ago(m.bombedAt ?? m.bombAt, now)}`
 
     return (
         <li
@@ -147,7 +186,9 @@ function MessageCard({ m, status, now }: { m: MessageItem; status: Status; now: 
         >
             <div className="flex items-center justify-between gap-2">
                 <StatusBadge status={status} />
-                <span className="text-xs text-muted-foreground">{fuseLabel(m.durationSec)} fuse</span>
+                <span className="text-xs text-muted-foreground">
+                    {fuseLabel(m.durationSec)} fuse
+                </span>
             </div>
 
             <div className="mt-3 flex items-center gap-3">
@@ -170,7 +211,9 @@ function MessageCard({ m, status, now }: { m: MessageItem; status: Status; now: 
                 >
                     <Lock className="size-4 shrink-0 text-muted-foreground" />
                     {status === "bombed" ? (
-                        <span className="text-xs text-muted-foreground">Message deleted</span>
+                        <span className="text-xs text-muted-foreground">
+                            Message deleted
+                        </span>
                     ) : (
                         <span className="h-3 w-2/3 rounded bg-muted-foreground/30 blur-[3px]" />
                     )}
@@ -213,7 +256,8 @@ export function MessageList() {
 
     const items = messages.map((m) => ({ m, status: statusOf(m, now) }))
     const count = (s: Status) => items.filter((i) => i.status === s).length
-    const visible = filter === "all" ? items : items.filter((i) => i.status === filter)
+    const visible =
+        filter === "all" ? items : items.filter((i) => i.status === filter)
 
     const tabs: { value: Filter; label: string; n: number }[] = [
         { value: "all", label: "All", n: items.length },
@@ -224,9 +268,12 @@ export function MessageList() {
 
     if (isPending) {
         return (
-            <div className="space-y-3" aria-hidden>
+            <div className="grid gap-3 lg:grid-cols-2" aria-hidden>
                 {[0, 1, 2].map((i) => (
-                    <div key={i} className="h-36 animate-pulse rounded-2xl bg-muted" />
+                    <div
+                        key={i}
+                        className="h-36 animate-pulse rounded-2xl bg-muted"
+                    />
                 ))}
             </div>
         )
@@ -234,8 +281,10 @@ export function MessageList() {
 
     if (isError) {
         return (
-            <div className="space-y-3 rounded-2xl border p-8 text-center">
-                <p className="text-muted-foreground">Couldn&apos;t load your messages.</p>
+            <div className="flex flex-col items-center gap-3 rounded-2xl border p-6 text-center sm:p-8">
+                <p className="text-muted-foreground">
+                    Couldn&apos;t load your messages.
+                </p>
                 <Button onClick={() => refetch()} className="rounded-full">
                     Try again
                 </Button>
@@ -245,13 +294,21 @@ export function MessageList() {
 
     if (items.length === 0) {
         return (
-            <div className="space-y-4 rounded-2xl border border-dashed p-10 text-center">
-                <Flame className="mx-auto size-10 text-muted-foreground" aria-hidden />
+            <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed p-6 text-center sm:p-10">
+                <Flame
+                    className="mx-auto size-10 text-muted-foreground"
+                    aria-hidden
+                />
                 <div>
                     <p className="font-semibold">No messages yet</p>
-                    <p className="text-sm text-muted-foreground">Write one and send the link.</p>
+                    <p className="text-sm text-muted-foreground">
+                        Write one and send the link.
+                    </p>
                 </div>
-                <Button asChild className="btn-fuse rounded-full text-primary-foreground">
+                <Button
+                    asChild
+                    className="btn-fuse rounded-full text-primary-foreground"
+                >
                     <Link href="/new">Write your first one</Link>
                 </Button>
             </div>
@@ -259,13 +316,19 @@ export function MessageList() {
     }
 
     return (
-        <section className="space-y-4">
+        <section className="flex flex-col gap-4">
             <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
                 <TabsList className="grid h-11 w-full grid-cols-4 rounded-full p-1">
                     {tabs.map((t) => (
-                        <TabsTrigger key={t.value} value={t.value} className="rounded-full text-xs sm:text-sm">
+                        <TabsTrigger
+                            key={t.value}
+                            value={t.value}
+                            className="rounded-full text-xs sm:text-sm"
+                        >
                             {t.label}
-                            <span className="ml-1 text-muted-foreground tabular-nums">{t.n}</span>
+                            <span className="ml-1 text-muted-foreground tabular-nums">
+                                {t.n}
+                            </span>
                         </TabsTrigger>
                     ))}
                 </TabsList>
@@ -276,9 +339,14 @@ export function MessageList() {
                     Nothing here yet.
                 </p>
             ) : (
-                <ul className="space-y-3">
+                <ul className="grid gap-3 lg:grid-cols-2">
                     {visible.map(({ m, status }) => (
-                        <MessageCard key={m.id} m={m} status={status} now={now} />
+                        <MessageCard
+                            key={m.id}
+                            m={m}
+                            status={status}
+                            now={now}
+                        />
                     ))}
                 </ul>
             )}
