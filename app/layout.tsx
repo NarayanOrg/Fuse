@@ -4,6 +4,7 @@ import { Geist_Mono, Inter, Roboto } from "next/font/google"
 import "./globals.css"
 import { absoluteUrl, site } from "@/config/site"
 import { ThemeProvider } from "@/components/theme-provider"
+import { SessionCookieSync } from "@/components/auth/SessionCookieSync"
 import QueryProvider from "@/hooks/QueryProvider"
 import { cn } from "@/lib/utils"
 import { Toaster } from "sonner"
@@ -96,6 +97,7 @@ export default function RootLayout({
       <QueryProvider>
         <body>
           <ThemeProvider>
+            <SessionCookieSync />
             {children}
           </ThemeProvider>
           <Toaster position="top-center" closeButton />

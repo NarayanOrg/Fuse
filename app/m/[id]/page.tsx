@@ -5,6 +5,7 @@ import { FieldPath } from "firebase-admin/firestore"
 import { Reader } from "@/components/reader/reader"
 import { adminDb } from "@/firebase/admin"
 import { describeDuration } from "@/lib/format-duration"
+import { buildMetadata } from "@/lib/seo/metadata"
 
 // Public page: no sign-in. Always read fresh from Firestore.
 export const dynamic = "force-dynamic"
@@ -53,12 +54,14 @@ export async function generateMetadata({
         ? `${info.sender ? `@${info.sender} sent you a message.` : "Someone sent you a message."} It disappears ${describeDuration(info.durationSec)} after you open it.`
         : "This message no longer exists."
 
-    return {
+    return buildMetadata({
         title,
         description,
-        openGraph: { title, description },
-        robots: { index: false, follow: false },
-    }
+        pathname: `/m/${encodeURIComponent(id)}`,
+        imagePath: `/m/${encodeURIComponent(id)}/opengraph-image`,
+        imageAlt: "A private Fuse message link. The message itself is never shown in this preview.",
+        noIndex: true,
+    })
 }
 
 export default async function MessagePage({

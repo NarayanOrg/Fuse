@@ -33,7 +33,7 @@ export async function getMessagePreview(id: string): Promise<MessagePreview | nu
   const snapshot = await adminDb
     .collection("messages")
     .where(FieldPath.documentId(), "==", id)
-    .select("senderUsername", "anonymous", "durationSec", "status")
+    .select("senderUsername", "anonymous", "durationSec", "status", "bombAt")
     .limit(1)
     .get()
 
@@ -41,6 +41,12 @@ export async function getMessagePreview(id: string): Promise<MessagePreview | nu
   if (!document) return null
 
   const message = document.data()
+  const bombed =
+    message.status === "bombed" ||
+    (message.status === "opened" &&
+      typeof message.bombAt === "number" &&
+      Date.now() >= message.bombAt)
+
   return {
     sender:
       message.anonymous === true || typeof message.senderUsername !== "string"
@@ -50,7 +56,7 @@ export async function getMessagePreview(id: string): Promise<MessagePreview | nu
       typeof message.durationSec === "number" && Number.isFinite(message.durationSec)
         ? message.durationSec
         : 0,
-    bombed: message.status === "bombed",
+    bombed,
   }
 }
 

@@ -9,6 +9,7 @@ import { LayoutList, LogOut, Plus } from "lucide-react"
 import { toast } from "sonner"
 
 import { useMe } from "@/hooks/use-me"
+import { authFetch } from "@/lib/auth/auth-fetch"
 import { auth } from "@/firebase/client"
 import Logo from "../Logo"
 import { Avatar, AvatarFallback } from "../ui/avatar"
@@ -35,6 +36,10 @@ export function Header() {
 
     async function logout() {
         try {
+            const response = await authFetch("/api/session", { method: "DELETE" })
+            if (!response.ok) {
+                throw new Error(`Session clearing failed with status ${response.status}.`)
+            }
             await signOut(auth)
             queryClient.clear() // don't leak this user's messages to the next sign-in
             router.replace("/")

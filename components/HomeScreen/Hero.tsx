@@ -10,7 +10,7 @@ type HeroProps = {
 };
 
 const points = [
-  { icon: Link2, label: "Opens once" },
+  { icon: Link2, label: "Reopens until timer ends" },
   { icon: Timer, label: "Fuse up to 1 hour" },
   { icon: Trash2, label: "Deleted at zero" },
 ];
