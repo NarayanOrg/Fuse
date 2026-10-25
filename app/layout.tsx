@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Geist_Mono, Inter, Roboto } from "next/font/google"
+import { Inter } from "next/font/google"
 
 import "./globals.css"
 import { absoluteUrl, site } from "@/config/site"
@@ -9,17 +9,9 @@ import QueryProvider from "@/hooks/QueryProvider"
 import { cn } from "@/lib/utils"
 import { Toaster } from "sonner"
 
-const robotoHeading = Roboto({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-heading",
-  display: "swap",
-})
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" })
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-sans",
   display: "swap",
 })
 
@@ -92,7 +84,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable, robotoHeading.variable)}
+      className={cn("font-sans antialiased", inter.variable)}
     >
       <QueryProvider>
         <body>

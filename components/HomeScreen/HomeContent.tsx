@@ -2,12 +2,26 @@
 
 import { useEffect, useState } from "react"
 import { onAuthStateChanged } from "firebase/auth"
+import dynamic from "next/dynamic"
 
 import { Hero } from "@/components/HomeScreen/Hero"
-import { MessageList } from "@/components/HomeScreen/MessageList"
-import { UserGreeting } from "@/components/HomeScreen/UserGreeting"
 import { auth } from "@/firebase/client"
-import { HowItWorks } from "./HowItWorks"
+
+const HomeDashboard = dynamic(
+  () => import("@/components/HomeScreen/HomeDashboard"),
+  {
+    loading: () => (
+      <div
+        className="mx-auto grid w-full max-w-5xl gap-3 px-4 py-6 sm:px-6 sm:py-10 lg:grid-cols-2"
+        aria-hidden
+      >
+        {[0, 1, 2].map((item) => (
+          <div key={item} className="h-36 animate-pulse rounded-2xl bg-muted" />
+        ))}
+      </div>
+    ),
+  }
+)
 
 export function HomeContent({ serverSignedIn }: { serverSignedIn: boolean }) {
   const [clientSignedIn, setClientSignedIn] = useState<boolean | null>(null)
@@ -19,15 +33,5 @@ export function HomeContent({ serverSignedIn }: { serverSignedIn: boolean }) {
 
   const signedIn = clientSignedIn ?? serverSignedIn
 
-  return signedIn ? (
-    <div className="m-2 space-y-6">
-      <UserGreeting />
-      <MessageList />
-    </div>
-  ) : (
-    <div className="m-2 space-y-6">
-      <Hero />
-      <HowItWorks />
-    </div>
-  )
+  return signedIn ? <HomeDashboard /> : <Hero />
 }

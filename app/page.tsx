@@ -34,6 +34,7 @@ export default async function Home() {
       <main>
         <Header />
         <HomeContent serverSignedIn={signedIn} />
+        <HowItWorks />
       </main>
     </>
   )

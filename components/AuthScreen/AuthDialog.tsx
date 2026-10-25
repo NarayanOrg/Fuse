@@ -106,7 +106,11 @@ function Field({
             </div>
             {children}
             {error && (
-                <p id={`${id}-error`} role="alert" className="text-sm text-destructive">
+                <p
+                    id={`${id}-error`}
+                    role="alert"
+                    className="text-sm text-destructive"
+                >
                     {error}
                 </p>
             )}
@@ -179,7 +183,8 @@ function SignInForm({ onSuccess }: { onSuccess: (r: AuthResult) => void }) {
         e.preventDefault()
 
         const next: Errors = {}
-        if (!EMAIL_RE.test(email.trim())) next.email = "Enter a valid email address."
+        if (!EMAIL_RE.test(email.trim()))
+            next.email = "Enter a valid email address."
         if (!password) next.password = "Enter your password."
         setErrors(next)
         if (Object.keys(next).length) return
@@ -197,7 +202,9 @@ function SignInForm({ onSuccess }: { onSuccess: (r: AuthResult) => void }) {
 
     async function onForgot() {
         if (!EMAIL_RE.test(email.trim())) {
-            setErrors({ email: "Enter your email first, then tap Forgot password." })
+            setErrors({
+                email: "Enter your email first, then tap Forgot password.",
+            })
             return
         }
         try {
@@ -222,7 +229,9 @@ function SignInForm({ onSuccess }: { onSuccess: (r: AuthResult) => void }) {
                         clear("email")
                     }}
                     aria-invalid={!!errors.email}
-                    aria-describedby={errors.email ? "signin-email-error" : undefined}
+                    aria-describedby={
+                        errors.email ? "signin-email-error" : undefined
+                    }
                     className="h-11 rounded-xl"
                 />
             </Field>
@@ -251,7 +260,9 @@ function SignInForm({ onSuccess }: { onSuccess: (r: AuthResult) => void }) {
                         clear("password")
                     }}
                     aria-invalid={!!errors.password}
-                    aria-describedby={errors.password ? "signin-password-error" : undefined}
+                    aria-describedby={
+                        errors.password ? "signin-password-error" : undefined
+                    }
                 />
             </Field>
 
@@ -280,7 +291,8 @@ function SignUpForm({ onSuccess }: { onSuccess: (r: AuthResult) => void }) {
         e.preventDefault()
 
         const next: Errors = {}
-        if (!EMAIL_RE.test(email.trim())) next.email = "Enter a valid email address."
+        if (!EMAIL_RE.test(email.trim()))
+            next.email = "Enter a valid email address."
         if (password.length < 8) next.password = "Use at least 8 characters."
         if (confirm !== password) next.confirm = "Passwords don't match."
         setErrors(next)
@@ -318,12 +330,18 @@ function SignUpForm({ onSuccess }: { onSuccess: (r: AuthResult) => void }) {
                         clear("email")
                     }}
                     aria-invalid={!!errors.email}
-                    aria-describedby={errors.email ? "signup-email-error" : undefined}
+                    aria-describedby={
+                        errors.email ? "signup-email-error" : undefined
+                    }
                     className="h-11 rounded-xl"
                 />
             </Field>
 
-            <Field id="signup-password" label="Password" error={errors.password}>
+            <Field
+                id="signup-password"
+                label="Password"
+                error={errors.password}
+            >
                 <PasswordInput
                     id="signup-password"
                     autoComplete="new-password"
@@ -334,11 +352,17 @@ function SignUpForm({ onSuccess }: { onSuccess: (r: AuthResult) => void }) {
                         clear("password")
                     }}
                     aria-invalid={!!errors.password}
-                    aria-describedby={errors.password ? "signup-password-error" : undefined}
+                    aria-describedby={
+                        errors.password ? "signup-password-error" : undefined
+                    }
                 />
             </Field>
 
-            <Field id="signup-confirm" label="Confirm password" error={errors.confirm}>
+            <Field
+                id="signup-confirm"
+                label="Confirm password"
+                error={errors.confirm}
+            >
                 <PasswordInput
                     id="signup-confirm"
                     autoComplete="new-password"
@@ -349,7 +373,9 @@ function SignUpForm({ onSuccess }: { onSuccess: (r: AuthResult) => void }) {
                         clear("confirm")
                     }}
                     aria-invalid={!!errors.confirm}
-                    aria-describedby={errors.confirm ? "signup-confirm-error" : undefined}
+                    aria-describedby={
+                        errors.confirm ? "signup-confirm-error" : undefined
+                    }
                 />
             </Field>
 
@@ -359,7 +385,11 @@ function SignUpForm({ onSuccess }: { onSuccess: (r: AuthResult) => void }) {
                 </p>
             )}
 
-            <SubmitButton pending={pending} idle="Create account" busy="Creating account" />
+            <SubmitButton
+                pending={pending}
+                idle="Create account"
+                busy="Creating account"
+            />
         </form>
     )
 }
@@ -390,7 +420,9 @@ export default function AuthDialog({ className }: { className?: string }) {
         setGoogleBusy(true)
         try {
             const res = await signInWithPopup(auth, new GoogleAuthProvider())
-            handleSuccess({ isNewUser: !!getAdditionalUserInfo(res)?.isNewUser })
+            handleSuccess({
+                isNewUser: !!getAdditionalUserInfo(res)?.isNewUser,
+            })
         } catch (err) {
             const code = (err as FirebaseError).code
             // Closing the popup is not an error worth showing.
@@ -408,8 +440,12 @@ export default function AuthDialog({ className }: { className?: string }) {
     // Already signed in: skip the dialog and go straight to compose.
     if (user) {
         return (
-            <Button size="lg" className={className} onClick={() => router.push("/new")}>
-                <Send className="btn-fuse size-5" aria-hidden />
+            <Button
+                size="lg"
+                className={className}
+                onClick={() => router.push("/new")}
+            >
+                <Send data-icon="inline-start" aria-hidden />
                 Send a message
             </Button>
         )
@@ -419,22 +455,27 @@ export default function AuthDialog({ className }: { className?: string }) {
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button size="lg" className={className}>
-                    <Send className="btn-fuse size-5" aria-hidden />
+                    <Send data-icon="inline-start" aria-hidden />
                     Send a message
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="gap-0 my-2 max-h-full overflow-auto border bg-card p-6">
+            <DialogContent className="my-2 max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto border bg-card p-4 sm:max-h-[calc(100dvh-3rem)] sm:p-6">
                 <DialogHeader className="items-center text-center">
                     <div className="mb-2 flex size-14 items-center justify-center rounded-2xl">
-                        <Image src="/logo.png" alt="Logo" width={40} height={40} />
+                        <Image
+                            src="/logo.png"
+                            alt="Logo"
+                            width={40}
+                            height={40}
+                        />
                     </div>
                     <DialogTitle className="text-2xl font-extrabold tracking-tight">
                         Welcome to Fuse
                     </DialogTitle>
                     <DialogDescription className="max-w-[18rem] text-pretty">
-                        Sign in to send messages that delete themselves, and track what
-                        happens to them.
+                        Sign in to send messages that delete themselves, and
+                        track what happens to them.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -460,7 +501,10 @@ export default function AuthDialog({ className }: { className?: string }) {
                         className="h-12 w-full rounded-full text-base font-medium"
                     >
                         {googleBusy ? (
-                            <Loader2 className="size-5 animate-spin" aria-hidden />
+                            <Loader2
+                                className="size-5 animate-spin"
+                                aria-hidden
+                            />
                         ) : (
                             <GoogleIcon />
                         )}
@@ -482,10 +526,14 @@ export default function AuthDialog({ className }: { className?: string }) {
                 </Tabs>
 
                 <p className="mt-5 text-center text-sm text-muted-foreground">
-                    {mode === "signin" ? "Don't have an account? " : "Already have an account? "}
+                    {mode === "signin"
+                        ? "Don't have an account? "
+                        : "Already have an account? "}
                     <button
                         type="button"
-                        onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+                        onClick={() =>
+                            setMode(mode === "signin" ? "signup" : "signin")
+                        }
                         className="font-medium text-primary underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none"
                     >
                         {mode === "signin" ? "Create one" : "Sign in"}
